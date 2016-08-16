@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="structpres.css"/>
+    <script src="structpres.js"></script>
+    <title>Lexer - Part 1 of How to write a programming language</title>
+</head>
+
+<body>
+
+<div class="slide title">
+<h1 class="seriestitle">How to write a programming language</h1>
+<h1 class="afterseriestitle">Part 1: The Lexer</h1>
+
+<address>Andy Balaam<br/>
+<a href="http://www.artificialworlds.net/blog">artificialworlds.net/blog</a></address>
+</div>
+
+
+<a name="contents"></a>
+<div class="slide contents">
+<div class="slide_body">
+<h1>Contents</h1>
+<ul>
+    <li><a class="go_to_slide" href="#slide_1">What is a programming language?</a></li>
+    <li><a class="go_to_slide" href="#slide_4">Lexers emit tokens</a></li>
+    <li><a class="go_to_slide" href="#slide_7">Brief intro to Cell</a></li>
+    <li><a class="go_to_slide" href="#slide_9">Cell's Lexer</a></li>
+    <li><a class="go_to_slide" href="#slide_1">Discussion</a></li>
+</ul>
+</div>
+</div>
+
+
+<a name="slide_1"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_2"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language-noexe.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_3"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_4"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexers emit tokens</h1>
+<div class="image"><img src="lexer.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_5"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexers emit tokens</h1>
+<code>foo = "bar";</code>
+<p>becomes:</p>
+<code>("symbol", "foo")
+("="     , ""   )
+("string", "bar")
+(";"     , ""   )
+</code>
+</div>
+</div>
+
+
+<a name="slide_6"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexers emit tokens</h1>
+<code>200 - 158</code>
+<p>becomes:</p>
+<code>("number", "200")
+("-"     , ""   )
+("number", "158")
+</code>
+</div>
+</div>
+
+
+<a name="slide_7"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Brief intro to Cell</h1>
+<p>Cell is a programming language with:</p>
+<ul>
+    <li>Short implementation</li>
+    <li>(Hopefully) understandable implementation</li>
+</ul>
+<p>There is nothing else good about it.</p>
+</div>
+</div>
+
+
+<a name="slide_8"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Brief intro to Cell</h1>
+<code>num1 = 3;
+
+square = {:(x) x * x;};
+
+num2 = square( num1 );
+</code>
+</div>
+</div>
+
+
+<a name="slide_9"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<p>Lexing in Cell consists of identifying:</p>
+<ul>
+    <li>Numbers: 12, 4.2</li>
+    <li>Strings: "foo", 'bar'</li>
+    <li>Symbols: baz, qux_Quux</li>
+    <li>Operators: +, -</li>
+    <li>Other punctuation: (, }</li>
+</ul>
+</div>
+</div>
+
+
+<a name="slide_10"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <i>...</i>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_11"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <em>pass</em>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_12"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": <em>yield ("operation", c)</em>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_13"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": <em>yield (c, "")</em>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_14"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": yield (c, "")
+        elif c in ("'", '"'):
+            <em>yield ("string", _scan_string(c, chars))</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_15"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def _scan_string(delim, chars):
+    <em>ret = ""</em>
+    while chars.next != delim:
+        c = chars.move_next()
+        if c is None:
+            raise Exception(<i>...</i>)
+        <em>ret += c</em>
+    <i>chars.move_next()</i>
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_16"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": yield (c, "")
+        elif c in ("'", '"'): yield ("string<i>...</i>
+        elif re.match("[.0-9]", c):
+            <em>yield ("number", _scan(c, chars, "[.0-9]"))</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_17"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def _scan(first_char, chars, allowed):
+    <em>ret = first_char</em>
+    p = chars.next
+    while p is not None and re.match(allowed, p):
+        <em>ret += chars.move_next()</em>
+        p = chars.next
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_18"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        <i>...</i>
+        elif re.match("[_a-zA-Z]", c):
+            <em>yield (
+                "symbol",
+                _scan(c, chars, "[_a-zA-Z0-9]")
+            )</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_19"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <i>...</i>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <em>raise Exception(<i>...</i>)</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_20"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<div class="image"><img src="lexer.svg"/></div>
+<code>assert (
+    list(lex('<em>print("Hello, world!");</em>'))
+    ==
+    [ ("<em>symbol</em>", "print")
+    , ("<em>(</em>", "")
+    , ("<em>string</em>", "Hello, world!")
+    , ("<em>)</em>", "")
+    , ("<em>;</em>", "")
+    ]
+)
+</code>
+</div>
+</div>
+
+
+<a name="slide_21"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Discussion</h1>
+</div>
+</div>
+
+
+<a name="slide_22"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Donate</h1>
+<table class="moreinfo">
+    <tr>
+        <th>Donate!</th>
+        <td><a href="https://www.patreon.com/andybalaam">patreon.com/andybalaam</a></td>
+    </tr>
+</table>
+</div>
+</div>
+
+
+<a name="slide_23"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Play</h1>
+<table class="moreinfo" style="width: 95%;">
+    <tr>
+        <th>Play!</th>
+        <td><a href="http://artificialworlds.net/rabbit-escape/">artificialworlds.net/rabbit-escape</a></td>
+    </tr>
+</table>
+<div class="image"><img src="rabbitescape.gif"/></div>
+</div>
+</div>
+
+<a name="slide_24"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>More info</h1>
+<table class="moreinfo">
+    <tr>
+        <th>Videos</th>
+        <td><a href="http://www.youtube.com/user/ajbalaam">youtube.com/user/ajbalaam</a></td>
+    </tr>
+    <tr>
+        <th>Twitter</th>
+        <td><a href="http://twitter.com/andybalaam">@andybalaam</a></td>
+    </tr>
+    <tr>
+        <th>Blog</th>
+        <td><a href="http://www.artificialworlds.net/blog">artificialworlds.net/blog</a></td>
+    </tr>
+    <tr>
+        <th>Projects </th>
+        <td><a href="http://www.artificialworlds.net">artificialworlds.net</a></td>
+    </tr>
+</table>
+</div>
+</div>
