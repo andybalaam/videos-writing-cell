@@ -63,6 +63,17 @@ li
     margin-bottom: 2%;
 }
 
+tt
+{
+    background: #2d2d2d;
+    border-radius: 0.1em;
+    color: #66cccc;
+    white-space: pre;
+    font-size: 70%;
+    overflow: auto;
+    padding: 0.4em;
+}
+
 code
 {
     background: #2d2d2d;
