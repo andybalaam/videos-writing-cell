@@ -185,6 +185,19 @@
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's parser</h1>
+<code>class <em>Parser</em>:
+    def __init__(self, tokens, stop_at):
+        self.tokens = tokens
+        self.stop_at = stop_at
+</code>
+</div>
+</div>
+
+
+<a name="slide_12"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
 <code>def next_expr(self, prev):
     self.fail_if_at_end(";")
     <em>typ</em>, <em>value</em> = self.tokens.next
@@ -197,35 +210,18 @@
 </div>
 
 
-<a name="slide_12"></a>
-<div class="slide">
-<div class="slide_body">
-<h1>Cell's parser</h1>
-<code>def next_expr(self, prev):
-    <i># ...</i>
-    if prev is None and typ in (<i>...</i>
-    elif typ == "operation": <i>...</i>
-    elif typ == "(": <i>...</i>
-    elif typ == "{": <i>...</i>
-    elif typ == "=": <i>...</i>
-</code>
-</div>
-</div>
-
-
 <a name="slide_13"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's parser</h1>
 <code>def next_expr(self, prev):
     <i># ...</i>
-    if prev is None and typ in (
-      "number", "string", "symbol"):
-        <i>return</i> self.next_expr(<em>(typ, value)</em>)
-    elif typ == "operation": <i>...</i>
-    elif typ == "(": <i>...</i>
-    elif typ == "{": <i>...</i>
-    elif typ == "=": <i>...</i>
+    if prev is None and typ in (<i># ...</i>
+    elif typ == "operation": <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
 </code>
 </div>
 </div>
@@ -237,14 +233,14 @@
 <h1>Cell's parser</h1>
 <code>def next_expr(self, prev):
     <i># ...</i>
-    if prev is None and typ in (<i>...</i>
-    elif typ == "operation":
-        nxt = self.next_expr(<em>None</em>)
-        <i>return</i> self.next_expr(
-            <em>("operation", value, prev, nxt)</em>)
-    elif typ == "(": <i>...</i>
-    elif typ == "{": <i>...</i>
-    elif typ == "=": <i>...</i>
+    if prev is None and typ in (
+      "number", "string", "symbol"):
+        <i>return</i> self.next_expr(<em>(typ, value)</em>)
+    elif typ == "operation": <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
 </code>
 </div>
 </div>
@@ -258,32 +254,130 @@
     <i># ...</i>
     if prev is None and typ in (<i>...</i>
     elif typ == "operation":
-    elif typ == "(": <i>...</i>
-        args = self.<em>multi_exprs</em>("<i>,</i>", "<i>)</i>")
-        <i>return</i> self.next_expr(<em>("call", prev, args)</em>)
-    elif typ == "{": <i>...</i>
-    elif typ == "=": <i>...</i>
+        nxt = self.next_expr(<em>None</em>)
+        <i>return</i> self.next_expr(
+            <em>("operation", value, prev, nxt)</em>)
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
 </code>
 </div>
 </div>
 
+
+<a name="slide_16"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation": <i># ...</i>
     elif typ == "(":
-        args = self.multi_exprs(",", ")")
-        return self.next_expr(("call", prev, args))
+        args = self.<em>multi_exprs</em>("<i>,</i>", "<i>)</i>")
+        <i>return</i> self.next_expr(<em>("call", prev, args)</em>)
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_17"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def <em>multi_exprs</em>(self, sep, <em>end</em>):
+    ret = []
+    self.fail_if_at_end(<em>end</em>)
+    <i>typ</i> = self.tokens.next[0]
+    if <i>typ</i> == end:
+        self.tokens.move_next()
+    else:
+        <i># ...</i>
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_18"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def <em>multi_exprs</em>(self, <em>sep</em>, <em>end</em>):
+    <i># ...</i>
+    else:
+        arg_parser = <em>Parser</em>(self.tokens, <em>(sep, end)</em>)
+        while typ != end:
+            <i>p</i> = arg_parser.<i>next_expr(None)</i>
+            if p is not None:
+                <i>ret.append(p)</i>
+            typ = self.tokens.next[0]
+            self.tokens.move_next()
+            self.fail_if_at_end(end)
+    <i>return ret</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_19"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
     elif typ == "{":
-        params = self.parameters_list()
-        body = self.multi_exprs(";", "}")
-        return self.next_expr(("function", params, body))
+        params = self.<i>parameters_list</i>()
+        body = self.<i>multi_exprs</i>("<i>;</i>", "<i>}</i>")
+        <i>return</i> self.next_expr(<em>("function", params, body)</em>)
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_20"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
     elif typ == "=":
         if prev[0] != "symbol":
-            raise Exception("You can't assign to anything except a symbol.")
-        nxt = self.next_expr(None)
-        return self.next_expr(("assignment", prev, nxt))
+            raise Exception(<i>...</i>)
+        <em>nxt</em> = self.next_expr(<em>None</em>)
+        <i>return</i> self.next_expr(<em>("assignment", prev, nxt)</em>)
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_21"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
     else:
-        raise Exception("Unexpected token: " + str((typ, value)))
+        raise Exception("Unexpected token: " <i>...</i>
+</code>
+</div>
+</div>
 
 
-<a name="slide_"></a>
+<a name="slide_22"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Discussion</h1>
@@ -291,7 +385,7 @@
 </div>
 
 
-<a name="slide_"></a>
+<a name="slide_23"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Donate</h1>
@@ -305,7 +399,7 @@
 </div>
 
 
-<a name="slide_"></a>
+<a name="slide_24"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Play</h1>
@@ -319,7 +413,7 @@
 </div>
 </div>
 
-<a name="slide_"></a>
+<a name="slide_25"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>More info</h1>
