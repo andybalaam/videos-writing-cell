@@ -172,13 +172,115 @@
 <code>def parse(tokens):
     parser = <em>Parser</em>(tokens, ";")
     while parser.tokens.next is not None:
-        p = parser.<em>next_expression</em>(None)
+        p = parser.<em>next_expr</em>(None)
         if p is not None:
             <em>yield p</em>
         parser.tokens.move_next()
 </code>
 </div>
 </div>
+
+
+<a name="slide_11"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    self.fail_if_at_end(";")
+    <em>typ</em>, <em>value</em> = self.tokens.next
+    if <em>typ</em> in self.stop_at:
+        <i>return prev</i>
+    self.tokens.move_next()
+    <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_12"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation": <i>...</i>
+    elif typ == "(": <i>...</i>
+    elif typ == "{": <i>...</i>
+    elif typ == "=": <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_13"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (
+      "number", "string", "symbol"):
+        <i>return</i> self.next_expr(<em>(typ, value)</em>)
+    elif typ == "operation": <i>...</i>
+    elif typ == "(": <i>...</i>
+    elif typ == "{": <i>...</i>
+    elif typ == "=": <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_14"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation":
+        nxt = self.next_expr(<em>None</em>)
+        <i>return</i> self.next_expr(
+            <em>("operation", value, prev, nxt)</em>)
+    elif typ == "(": <i>...</i>
+    elif typ == "{": <i>...</i>
+    elif typ == "=": <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_15"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation":
+    elif typ == "(": <i>...</i>
+        args = self.<em>multi_exprs</em>("<i>,</i>", "<i>)</i>")
+        <i>return</i> self.next_expr(<em>("call", prev, args)</em>)
+    elif typ == "{": <i>...</i>
+    elif typ == "=": <i>...</i>
+</code>
+</div>
+</div>
+
+    elif typ == "(":
+        args = self.multi_exprs(",", ")")
+        return self.next_expr(("call", prev, args))
+    elif typ == "{":
+        params = self.parameters_list()
+        body = self.multi_exprs(";", "}")
+        return self.next_expr(("function", params, body))
+    elif typ == "=":
+        if prev[0] != "symbol":
+            raise Exception("You can't assign to anything except a symbol.")
+        nxt = self.next_expr(None)
+        return self.next_expr(("assignment", prev, nxt))
+    else:
+        raise Exception("Unexpected token: " + str((typ, value)))
 
 
 <a name="slide_"></a>
