@@ -34,8 +34,8 @@ This work is licensed under a
 <ul>
     <li><a class="go_to_slide" href="#slide_1">Recap</a></li>
     <li><a class="go_to_slide" href="#slide_3">Evaluation</a></li>
-    <li><a class="go_to_slide" href="#slide_">Scope</a></li>
-    <li><a class="go_to_slide" href="#slide_">Environments</a></li>
+    <li><a class="go_to_slide" href="#slide_5">Scope</a></li>
+    <li><a class="go_to_slide" href="#slide_7">Environments</a></li>
     <li><a class="go_to_slide" href="#slide_">Cell's evaluator</a></li>
 </ul>
 </div>
@@ -101,6 +101,25 @@ myfn = {
 };
 myfn();
 print( <em>x</em> );
+</code>
+</div>
+</div>
+
+
+<a name="slide_6"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Scope</h1>
+<code>outerfn = {
+    x = 12;
+    <em>innerfn</em> = {
+        print(x);
+    };
+    <em>innerfn</em>;
+};
+
+<em>thing</em> = outerfn();
+<em>thing</em>();
 </code>
 </div>
 </div>
