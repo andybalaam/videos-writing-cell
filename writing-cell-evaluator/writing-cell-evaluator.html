@@ -33,9 +33,10 @@ This work is licensed under a
 <h1>Contents</h1>
 <ul>
     <li><a class="go_to_slide" href="#slide_1">Recap</a></li>
-    <li><a class="go_to_slide" href="#slide_"></a></li>
-    <li><a class="go_to_slide" href="#slide_"></a></li>
-    <li><a class="go_to_slide" href="#slide_"></a></li>
+    <li><a class="go_to_slide" href="#slide_3">Evaluation</a></li>
+    <li><a class="go_to_slide" href="#slide_">Scope</a></li>
+    <li><a class="go_to_slide" href="#slide_">Environments</a></li>
+    <li><a class="go_to_slide" href="#slide_">Cell's evaluator</a></li>
 </ul>
 </div>
 </div>
@@ -54,21 +55,55 @@ This work is licensed under a
 <div class="slide">
 <div class="slide_body">
 <h1>Recap - Lexing &amp; Parsing</h1>
-<code>x = 3 + 4;</code>
+<code>print( x + 2 );</code>
 <p>becomes:</p>
-<code>Assignment:
-    Symbol: <em>x</em>
-    Value:
-        Operation:
-            Type: <em>+</em>
-            Arguments:
-                <em>3</em>
-                <em>4</em>
+<code>("call",
+    ("symbol", "<em>print</em>"),
+    <i>[</i>
+        ("operation",
+            "<em>+</em>",
+            ("symbol", "<em>x</em>"),
+            ("number", "<em>2</em>")
+        )
+    <i>]</i>
+)
 </code>
 </div>
 </div>
 
 
+<a name="slide_3"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Evaluation</h1>
+<div class="image"><img src="evaluator.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_4"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Evaluation is finding values</h1>
+<div class="image"><img src="values.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_5"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Scope</h1>
+<code><em>x</em> = "World!";
+myfn = {
+    <em>x</em> = "Hello, ";
+    print( <em>x</em> );
+};
+myfn();
+print( <em>x</em> );
+</code>
+</div>
+</div>
 
 
 <a name="slide_"></a>
