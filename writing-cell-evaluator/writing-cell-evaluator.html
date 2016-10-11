@@ -36,7 +36,7 @@ This work is licensed under a
     <li><a class="go_to_slide" href="#slide_3">Evaluation</a></li>
     <li><a class="go_to_slide" href="#slide_5">Scope</a></li>
     <li><a class="go_to_slide" href="#slide_9">Environments</a></li>
-    <li><a class="go_to_slide" href="#slide_">Cell's evaluator</a></li>
+    <li><a class="go_to_slide" href="#slide_12">Cell's evaluator</a></li>
 </ul>
 </div>
 </div>
@@ -198,6 +198,145 @@ World!</i></code>
     # ...
     def <em>set</em>(self, name, value):
         self.items[name] = value
+</code>
+</div>
+</div>
+
+
+<a name="slide_12"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+    typ = expr[0]
+    if typ == "number": <i>...</i>
+    elif typ == "string": <i>...</i>
+    elif typ == "none": <i>...</i>
+    elif typ == "operation": <i>...</i>
+    elif typ == "symbol": <i>...</i>
+    elif typ == "assignment": <i>...</i>
+    elif typ == "call": <i>...</i>
+    elif typ == "function": <i>...</i>
+    else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_13"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>if typ == "<em>number</em>":
+    return ("number", float(expr[1]))
+</code>
+</div>
+</div>
+
+
+<a name="slide_14"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>string</em>":
+    return ("string", expr[1])
+</code>
+</div>
+</div>
+
+
+<a name="slide_15"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>none</em>":
+    return ("none",)
+</code>
+</div>
+</div>
+
+
+<a name="slide_16"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>operation</em>":
+        return _operation(expr, env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_17"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def _operation(expr, env):
+    arg1 = <em>eval_expr</em>(expr[2], env)
+    arg2 = <em>eval_expr</em>(expr[3], env)
+    if expr[1] == "<em>+</em>":
+        return ("number", arg1[1] <em>+</em> arg2[1])
+    elif expr[1] == "<em>-</em>":
+        return ("number", arg1[1] <em>-</em> arg2[1])
+    <i># ...</i>
+    else:
+        raise Exception("Unknown operation: " + expr[1])
+</code>
+</div>
+</div>
+
+
+<a name="slide_18"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>symbol</em>":
+    name = expr[1]
+    ret = <i>env.get</i>(name)
+    if ret is None:
+        raise Exception("Unknown symbol '%s'." % name)
+    else:
+        return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_19"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>assignment</em>":
+    var_name = expr[1][1]
+    val = <em>eval_expr</em>(expr[2], env)
+    <i>env.set</i>(var_name, val)
+    return val
+</code>
+</div>
+</div>
+
+
+<a name="slide_20"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>elif typ == "<em>call</em>":
+    return _function_call(expr, env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_21"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def _function_call(expr, env):
+    fn = <em>eval_expr</em>(expr[1], env)
+    args = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+    if fn[0] == "function": <i>...</i>
+    elif fn[0] == "native": <i>...</i>
+    else: <i>...</i>
 </code>
 </div>
 </div>
