@@ -35,7 +35,7 @@ This work is licensed under a
     <li><a class="go_to_slide" href="#slide_1">Recap</a></li>
     <li><a class="go_to_slide" href="#slide_3">Evaluation</a></li>
     <li><a class="go_to_slide" href="#slide_5">Scope</a></li>
-    <li><a class="go_to_slide" href="#slide_7">Environments</a></li>
+    <li><a class="go_to_slide" href="#slide_9">Environments</a></li>
     <li><a class="go_to_slide" href="#slide_">Cell's evaluator</a></li>
 </ul>
 </div>
@@ -110,6 +110,24 @@ print( <em>x</em> );
 <div class="slide">
 <div class="slide_body">
 <h1>Scope</h1>
+<code><em>x</em> = "World!";
+myfn = {
+    <em>x</em> = "Hello, ";
+    print( <em>x</em> );
+};
+myfn();
+print( <em>x</em> );
+</code><br/>
+<code><i>Hello, 
+World!</i></code>
+</div>
+</div>
+
+
+<a name="slide_7"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Scope</h1>
 <code>outerfn = {
     x = 12;
     <em>innerfn</em> = {
@@ -120,6 +138,66 @@ print( <em>x</em> );
 
 <em>thing</em> = outerfn();
 <em>thing</em>();
+</code>
+</div>
+</div>
+
+
+<a name="slide_8"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Scope</h1>
+<code>outerfn = {
+    x = 12;
+    <em>innerfn</em> = {
+        print(x);
+    };
+    <em>innerfn</em>;
+};
+
+<em>thing</em> = outerfn();
+<em>thing</em>();
+</code><br/>
+<code><i>12</i></code>
+</div>
+</div>
+
+
+<a name="slide_9"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<div class="image"><img src="environments.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_10"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<code>class Env:
+    # ...
+    def <em>get</em>(self, name):
+        if name in self.items:
+            return self.items[name]
+        elif self.parent is not None:
+            return self.parent.get(name)
+        else:
+            return None
+</code>
+</div>
+</div>
+
+
+<a name="slide_11"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<code>class Env:
+    # ...
+    def <em>set</em>(self, name, value):
+        self.items[name] = value
 </code>
 </div>
 </div>
