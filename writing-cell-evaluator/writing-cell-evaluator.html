@@ -176,7 +176,7 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Environments</h1>
-<code>class Env:
+<code>class <i>Env</i>:
     # ...
     def <em>get</em>(self, name):
         if name in self.items:
@@ -194,7 +194,7 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Environments</h1>
-<code>class Env:
+<code>class <i>Env</i>:
     # ...
     def <em>set</em>(self, name, value):
         self.items[name] = value
@@ -207,16 +207,16 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>def eval_expr(expr, env):
+<code>def eval_expr(expr, <i>env</i>):
     typ = expr[0]
-    if typ == "number": <i>...</i>
-    elif typ == "string": <i>...</i>
-    elif typ == "none": <i>...</i>
-    elif typ == "operation": <i>...</i>
-    elif typ == "symbol": <i>...</i>
-    elif typ == "assignment": <i>...</i>
-    elif typ == "call": <i>...</i>
-    elif typ == "function": <i>...</i>
+    if typ == "<em>number</em>": <i>...</i>
+    elif typ == "<em>string</em>": <i>...</i>
+    elif typ == "<em>none</em>": <i>...</i>
+    elif typ == "<em>operation</em>": <i>...</i>
+    elif typ == "<em>symbol</em>": <i>...</i>
+    elif typ == "<em>assignment</em>": <i>...</i>
+    elif typ == "<em>call</em>": <i>...</i>
+    elif typ == "<em>function</em>": <i>...</i>
     else: <i>...</i>
 </code>
 </div>
@@ -227,7 +227,9 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>if typ == "<em>number</em>":
+<code>def eval_expr(expr, env):
+<i>...</i>
+if typ == "<em>number</em>":
     return ("number", float(expr[1]))
 </code>
 </div>
@@ -238,7 +240,9 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>string</em>":
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>string</em>":
     return ("string", expr[1])
 </code>
 </div>
@@ -249,7 +253,9 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>none</em>":
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>none</em>":
     return ("none",)
 </code>
 </div>
@@ -260,8 +266,10 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>operation</em>":
-        return _operation(expr, env)
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>operation</em>":
+    return <i>_operation</i>(expr, env)
 </code>
 </div>
 </div>
@@ -271,7 +279,7 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>def _operation(expr, env):
+<code>def <i>_operation</i>(expr, env):
     arg1 = <em>eval_expr</em>(expr[2], env)
     arg2 = <em>eval_expr</em>(expr[3], env)
     if expr[1] == "<em>+</em>":
@@ -290,7 +298,9 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>symbol</em>":
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>symbol</em>":
     name = expr[1]
     ret = <i>env.get</i>(name)
     if ret is None:
@@ -306,7 +316,9 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>assignment</em>":
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>assignment</em>":
     var_name = expr[1][1]
     val = <em>eval_expr</em>(expr[2], env)
     <i>env.set</i>(var_name, val)
@@ -320,8 +332,10 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>elif typ == "<em>call</em>":
-    return _function_call(expr, env)
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>call</em>":
+    return <i>_function_call</i>(expr, env)
 </code>
 </div>
 </div>
@@ -331,7 +345,7 @@ World!</i></code>
 <div class="slide">
 <div class="slide_body">
 <h1>Cell's evaluator</h1>
-<code>def _function_call(expr, env):
+<code>def <i>_function_call</i>(expr, env):
     fn = <em>eval_expr</em>(expr[1], env)
     args = list((<em>eval_expr</em>(a, env) for a in expr[2]))
     if fn[0] == "function": <i>...</i>
@@ -342,7 +356,94 @@ World!</i></code>
 </div>
 
 
-<a name="slide_"></a>
+<a name="slide_22"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>":
+    params = fn[1]
+    fail_if_wrong_number_of_args(expr[1], params, args)
+    body = fn[2]
+    fn_env = fn[3]
+    <i>new_env = Env(fn_env)</i>
+    for p, a in zip(params, <em>args</em>):
+        <i>new_env.set</i>(p[1], a)
+    return <em>eval_list</em>(body, new_env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_23"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>": <i>...</i>
+elif fn[0] == "<i>native</i>":
+    py_fn = fn[1]
+    params = inspect.getargspec(py_fn).args
+    fail_if_wrong_number_of_args(expr[1], params[1:], args)
+    return <em>fn[1](env, *args)</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_24"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>": <i>...</i>
+elif fn[0] == "<i>native</i>":
+else:
+    raise <em>Exception</em>( "Not a function: %s" % str(fn))
+</code>
+</div>
+</div>
+
+
+<a name="slide_25"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>function</em>":
+    return ("function", expr[1], expr[2], <i>Env</i>(env))
+</code>
+</div>
+</div>
+
+
+<a name="slide_26"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+else:
+    raise <em>Exception</em>("Unknown expression type: " + str(expr))
+</code>
+</div>
+</div>
+
+
+<a name="slide_27"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>End result: value + side effects</h1>
+<div class="image"><img src="print-value.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_28"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Discussion</h1>
@@ -350,7 +451,7 @@ World!</i></code>
 </div>
 
 
-<a name="slide_"></a>
+<a name="slide_29"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Donate</h1>
@@ -364,7 +465,7 @@ World!</i></code>
 </div>
 
 
-<a name="slide_"></a>
+<a name="slide_30"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>Play</h1>
@@ -378,7 +479,7 @@ World!</i></code>
 </div>
 </div>
 
-<a name="slide_"></a>
+<a name="slide_31"></a>
 <div class="slide">
 <div class="slide_body">
 <h1>More info</h1>
