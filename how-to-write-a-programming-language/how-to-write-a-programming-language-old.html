@@ -1,0 +1,1153 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="structpres.css"/>
+    <script src="structpres.js"></script>
+    <title>How to write a programming language</title>
+</head>
+
+<body>
+
+<div class="slide title">
+
+<div class="cc">
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons Licence" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
+This work is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons<br />Attribution-ShareAlike 4.0 International License</a>
+</div>
+
+<h1 class="seriestitle">How to write a programming language</h1>
+
+<address>Andy Balaam, OpenMarket<br/>
+<a href="http://www.artificialworlds.net/blog">artificialworlds.net/blog</a></address>
+</div>
+
+
+<a name="contents"></a>
+<div class="slide contents">
+<div class="slide_body">
+<h1>Contents</h1>
+<ul>
+    <li><a class="go_to_slide" href="#slide_1">What is a programming language?</a></li>
+    <li><a class="go_to_slide" href="#slide_4">Introducing Cell</a></li>
+    <li><a class="go_to_slide" href="#slide_14">Lexing</a></li>
+    <li><a class="go_to_slide" href="#slide_30">Parsing</a></li>
+    <li><a class="go_to_slide" href="#slide_51">Evaluation</a></li>
+    <li><a class="go_to_slide" href="#slide_71">Discussion</a></li>
+</ul>
+</div>
+</div>
+
+
+<a name="slide_1"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_2"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language-noexe.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_3"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>What is a programming language?</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_4"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell</h1>
+<p>Cell is a programming language with:</p>
+<ul>
+    <li>Short implementation</li>
+    <li>(Hopefully) understandable implementation</li>
+</ul>
+<p>There is nothing else good about it.</p>
+<p><a href="https://github.com/andybalaam/cell">github.com/andybalaam/cell</a></p>
+</div>
+</div>
+
+
+<a name="slide_5"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell</h1>
+<code>num1 = 3;
+
+square = {:(x) x * x;};
+
+num2 = square( num1 );
+</code>
+</div>
+</div>
+
+
+<a name="slide_6"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell</h1>
+<p>Cell has four expression types:
+<ul>
+    <li>Assignment <tt>x = 3</tt></li>
+    <li>Operations <tt>4 + y</tt></li>
+    <li>Function calls <tt>sqrt( -1 )</tt></li>
+    <li>Function definitions <tt>{:(x, y) x*x + y*y;}</tt></li>
+</ul>
+</p>
+</div>
+</div>
+
+
+<a name="slide_7"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell</h1>
+<p>The coolest thing about Cell is:
+<ul><li><tt>if</tt> is a function, not a keyword</li></ul>
+</p>
+<p style="margin-top: 6em; text-align: center;">
+More at:
+<a href="https://github.com/andybalaam/cell">github.com/andybalaam/cell</a>
+</p>
+</div>
+</div>
+
+
+<a name="slide_8"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell</h1>
+<ul><li><tt>if</tt> is a function, not a keyword</li></ul>
+<code><em>if(</em>
+    is_even( 2 )<em>,</em>
+    { print "Even!"; }<em>,</em>
+    { print "Odd."; }
+<em>);</em>
+</code>
+<p style="margin-top: 2em; text-align: center;">
+More at:
+<a href="https://github.com/andybalaam/cell">github.com/andybalaam/cell</a>
+</p>
+</div>
+</div>
+
+
+<a name="slide_9"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell - Scope</h1>
+<code><em>x</em> = "World!";
+myfn = {
+    <em>x</em> = "Hello, ";
+    print( <em>x</em> );
+};
+myfn();
+print( <em>x</em> );
+</code>
+</div>
+</div>
+
+
+<a name="slide_10"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell - Scope</h1>
+<code><em>x</em> = "World!";
+myfn = {
+    <em>x</em> = "Hello, ";
+    print( <em>x</em> );
+};
+myfn();
+print( <em>x</em> );
+</code><br/>
+<code><i>Hello, 
+World!</i></code>
+</div>
+</div>
+
+
+<a name="slide_11"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell - Scope</h1>
+<code>outerfn = {
+    x = 12;
+    <em>innerfn</em> = {
+        print(x);
+    };
+    <em>innerfn</em>;
+};
+
+<em>thing</em> = outerfn();
+<em>thing</em>();
+</code>
+</div>
+</div>
+
+
+<a name="slide_12"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Introducing Cell - Scope</h1>
+<code>outerfn = {
+    x = 12;
+    <em>innerfn</em> = {
+        print(x);
+    };
+    <em>innerfn</em>;
+};
+
+<em>thing</em> = outerfn();
+<em>thing</em>();
+</code><br/>
+<code><i>12</i></code>
+</div>
+</div>
+
+
+<a name="slide_13"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>A programming language</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_14"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexing</h1>
+<div class="image"><img src="lexer.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_15"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexers emit tokens</h1>
+<code>foo = "bar";</code>
+<p>becomes:</p>
+<code>("symbol", "foo")
+("="     , ""   )
+("string", "bar")
+(";"     , ""   )
+</code>
+</div>
+</div>
+
+
+<a name="slide_16"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Lexers emit tokens</h1>
+<code>200 - 158</code>
+<p>becomes:</p>
+<code>("number", "200")
+("operator", "-"   )
+("number", "158")
+</code>
+</div>
+</div>
+
+
+<a name="slide_17"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<p>Lexing in Cell consists of identifying:</p>
+<ul>
+    <li>Numbers: 12, 4.2</li>
+    <li>Strings: "foo", 'bar'</li>
+    <li>Symbols: baz, qux_Quux</li>
+    <li>Operators: +, -</li>
+    <li>Other punctuation: (, }</li>
+</ul>
+</div>
+</div>
+
+
+<a name="slide_18"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <i>...</i>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_19"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <em>pass</em>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_20"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": <em>yield ("operation", c)</em>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_21"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": <em>yield (c, "")</em>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_22"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": yield (c, "")
+        elif c in ("'", '"'):
+            <em>yield ("string", _scan_string(c, chars))</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_23"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def _scan_string(delim, chars):
+    <em>ret = ""</em>
+    while chars.next != delim:
+        c = chars.move_next()
+        if c is None:
+            raise Exception(<i>...</i>)
+        <em>ret += c</em>
+    <i>chars.move_next()</i>
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_24"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        elif c in "+-*/": yield ("operation", c)
+        elif c in "(){},;=:": yield (c, "")
+        elif c in ("'", '"'): yield ("string<i>...</i>
+        elif re.match("[.0-9]", c):
+            <em>yield ("number", _scan(c, chars, "[.0-9]"))</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_25"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def _scan(first_char, chars, allowed):
+    <em>ret = first_char</em>
+    p = chars.next
+    while p is not None and re.match(allowed, p):
+        <em>ret += chars.move_next()</em>
+        p = chars.next
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_26"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": pass
+        <i>...</i>
+        elif re.match("[_a-zA-Z]", c):
+            <em>yield (
+                "symbol",
+                _scan(c, chars, "[_a-zA-Z0-9]")
+            )</em>
+        <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_27"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<code>def lex(chars):
+    while chars.next is not None:
+        c = chars.move_next()
+        if c in " \n": <i>...</i>
+        elif c in "+-*/": <i>...</i>
+        elif c in "(){},;=:": <i>...</i>
+        elif c in ("'", '"'): <i>...</i>
+        elif re.match("[.0-9]", c): <i>...</i>
+        elif re.match("[_a-zA-Z]", c): <i>...</i>
+        else: <em>raise Exception(<i>...</i>)</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_28"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's Lexer</h1>
+<div class="image"><img src="lexer.svg"/></div>
+<code>assert (
+    list(lex('<em>print("Hello, world!");</em>'))
+    ==
+    [ ("<em>symbol</em>", "print")
+    , ("<em>(</em>", "")
+    , ("<em>string</em>", "Hello, world!")
+    , ("<em>)</em>", "")
+    , ("<em>;</em>", "")
+    ]
+)
+</code>
+</div>
+</div>
+
+
+<a name="slide_29"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>A programming language</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_30"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Parsing</h1>
+<div class="image"><img src="parser.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_31"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Parsing</h1>
+<code>x = 3 + 4;</code>
+<p>becomes:</p>
+<code>Assignment:
+    Symbol: <em>x</em>
+    Value:
+        Operation:
+            Type: <em>+</em>
+            Arguments:
+                <em>3</em>
+                <em>4</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_32"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Parsing</h1>
+<code>print( x + 2 );</code>
+<p>becomes:</p>
+<code>FunctionCall:
+    Function: <em>print</em>
+    <i>Arguments</i>:
+        Operation:
+            Type: <em>+</em>
+            Arguments:
+                <em>x</em>
+                <em>2</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_33"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Parsing</h1>
+<code>print( x + 2 );</code>
+<p>becomes:</p>
+<code>("call",
+    ("symbol", "<em>print</em>"),
+    <i>[</i>
+        ("operation",
+            "<em>+</em>",
+            ("symbol", "<em>x</em>"),
+            ("number", "<em>2</em>")
+        )
+    <i>]</i>
+)
+</code>
+</div>
+</div>
+
+
+<a name="slide_34"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def parse(tokens):
+    parser = <em>Parser</em>(tokens, ";")
+    while parser.tokens.next is not None:
+        p = parser.<em>next_expr</em>(None)
+        if p is not None:
+            <em>yield p</em>
+        parser.tokens.move_next()
+</code>
+</div>
+</div>
+
+
+<a name="slide_35"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>class <em>Parser</em>:
+    def __init__(self, tokens, stop_at):
+        self.tokens = tokens
+        self.stop_at = stop_at
+</code>
+</div>
+</div>
+
+
+<a name="slide_36"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    self.fail_if_at_end(";")
+    <em>typ</em>, <em>value</em> = self.tokens.next
+    if <em>typ</em> in self.stop_at:
+        <i>return prev</i>
+    self.tokens.move_next()
+    <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_37"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i># ...</i>
+    elif typ == "operation": <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_38"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (
+      "number", "string", "symbol"):
+        <i>return</i> self.next_expr(<em>(typ, value)</em>)
+    elif typ == "operation": <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_39"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation":
+        nxt = self.next_expr(<em>None</em>)
+        <i>return</i> self.next_expr(
+            <em>("operation", value, prev, nxt)</em>)
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_40"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    if prev is None and typ in (<i>...</i>
+    elif typ == "operation": <i># ...</i>
+    elif typ == "(":
+        args = self.<em>multi_exprs</em>("<i>,</i>", "<i>)</i>")
+        <i>return</i> self.next_expr(<em>("call", prev, args)</em>)
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_41"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def <em>multi_exprs</em>(self, sep, <em>end</em>):
+    ret = []
+    self.fail_if_at_end(<em>end</em>)
+    <i>typ</i> = self.tokens.next[0]
+    if <i>typ</i> == end:
+        self.tokens.move_next()
+    else:
+        <i># ...</i>
+    return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_42"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def <em>multi_exprs</em>(self, <em>sep</em>, <em>end</em>):
+    <i># ...</i>
+    else:
+        arg_parser = <em>Parser</em>(self.tokens, <em>(sep, end)</em>)
+        while typ != end:
+            <i>p</i> = arg_parser.<i>next_expr(None)</i>
+            if p is not None:
+                <i>ret.append(p)</i>
+            typ = self.tokens.next[0]
+            self.tokens.move_next()
+            self.fail_if_at_end(end)
+    <i>return ret</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_43"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{":
+        params = self.<i>parameters_list</i>()
+        body = self.<i>multi_exprs</i>("<i>;</i>", "<i>}</i>")
+        <i>return</i> self.next_expr(<em>("function", params, body)</em>)
+    elif typ == "=": <i># ...</i>
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_44"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=":
+        if prev[0] != "symbol":
+            raise Exception(<i>...</i>)
+        <em>nxt</em> = self.next_expr(<em>None</em>)
+        <i>return</i> self.next_expr(<em>("assignment", prev, nxt)</em>)
+    else: <i># ...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_45"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's parser</h1>
+<code>def next_expr(self, prev):
+    <i># ...</i>
+    elif typ == "(": <i># ...</i>
+    elif typ == "{": <i># ...</i>
+    elif typ == "=": <i># ...</i>
+    else:
+        raise Exception("Unexpected token: " <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_46"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>A programming language</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_47"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Recap - Lexing</h1>
+<code>foo = "bar";</code>
+<p>becomes:</p>
+<code>("symbol", "foo")
+("="     , ""   )
+("string", "bar")
+(";"     , ""   )
+</code>
+</div>
+</div>
+
+
+<a name="slide_48"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Recap - Parsing</h1>
+<code>print( x + 2 );</code>
+<p>becomes:</p>
+<code>("call",
+    ("symbol", "<em>print</em>"),
+    <i>[</i>
+        ("operation",
+            "<em>+</em>",
+            ("symbol", "<em>x</em>"),
+            ("number", "<em>2</em>")
+        )
+    <i>]</i>
+)
+</code>
+</div>
+</div>
+
+
+<a name="slide_49"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Recap - Cell</h1>
+<code>num1 = 3;
+
+square = {:(x) x * x;};
+
+num2 = square( num1 );
+</code>
+</div>
+</div>
+
+
+<a name="slide_50"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Recap - Cell, scope</h1>
+<code>outerfn = {
+    x = 12;
+    <em>innerfn</em> = {
+        print(x);
+    };
+    <em>innerfn</em>;
+};
+
+<em>thing</em> = outerfn();
+<em>thing</em>();
+</code>
+</div>
+</div>
+
+
+<a name="slide_51"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<div class="image"><img src="environments.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_52"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<code>class <i>Env</i>:
+    # ...
+    def <em>get</em>(self, name):
+        if name in self.items:
+            return self.items[name]
+        elif self.parent is not None:
+            return self.parent.get(name)
+        else:
+            return None
+</code>
+</div>
+</div>
+
+
+<a name="slide_53"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Environments</h1>
+<code>class <i>Env</i>:
+    # ...
+    def <em>set</em>(self, name, value):
+        self.items[name] = value
+</code>
+</div>
+</div>
+
+
+<a name="slide_54"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, <i>env</i>):
+    typ = expr[0]
+    if typ == "<em>number</em>": <i>...</i>
+    elif typ == "<em>string</em>": <i>...</i>
+    elif typ == "<em>none</em>": <i>...</i>
+    elif typ == "<em>operation</em>": <i>...</i>
+    elif typ == "<em>symbol</em>": <i>...</i>
+    elif typ == "<em>assignment</em>": <i>...</i>
+    elif typ == "<em>call</em>": <i>...</i>
+    elif typ == "<em>function</em>": <i>...</i>
+    else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_55"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+if typ == "<em>number</em>":
+    return ("number", float(expr[1]))
+</code>
+</div>
+</div>
+
+
+<a name="slide_56"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>string</em>":
+    return ("string", expr[1])
+</code>
+</div>
+</div>
+
+
+<a name="slide_57"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>none</em>":
+    return ("none",)
+</code>
+</div>
+</div>
+
+
+<a name="slide_58"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>operation</em>":
+    return <i>_operation</i>(expr, env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_59"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def <i>_operation</i>(expr, env):
+    arg1 = <em>eval_expr</em>(expr[2], env)
+    arg2 = <em>eval_expr</em>(expr[3], env)
+    if expr[1] == "<em>+</em>":
+        return ("number", arg1[1] <em>+</em> arg2[1])
+    elif expr[1] == "<em>-</em>":
+        return ("number", arg1[1] <em>-</em> arg2[1])
+    <i># ...</i>
+    else:
+        raise Exception("Unknown operation: " + expr[1])
+</code>
+</div>
+</div>
+
+
+<a name="slide_60"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>symbol</em>":
+    name = expr[1]
+    ret = <i>env.get</i>(name)
+    if ret is None:
+        raise Exception("Unknown symbol '%s'." % name)
+    else:
+        return ret
+</code>
+</div>
+</div>
+
+
+<a name="slide_61"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>assignment</em>":
+    var_name = expr[1][1]
+    val = <em>eval_expr</em>(expr[2], env)
+    <i>env.set</i>(var_name, val)
+    return val
+</code>
+</div>
+</div>
+
+
+<a name="slide_62"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>call</em>":
+    return <i>_function_call</i>(expr, env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_63"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def <i>_function_call</i>(expr, env):
+    fn = <em>eval_expr</em>(expr[1], env)
+    args = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+    if fn[0] == "function": <i>...</i>
+    elif fn[0] == "native": <i>...</i>
+    else: <i>...</i>
+</code>
+</div>
+</div>
+
+
+<a name="slide_64"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>":
+    params = fn[1]
+    fail_if_wrong_number_of_args(expr[1], params, args)
+    body = fn[2]
+    fn_env = fn[3]
+    <i>new_env = Env(fn_env)</i>
+    for p, a in zip(params, <em>args</em>):
+        <i>new_env.set</i>(p[1], a)
+    return <em>eval_list</em>(body, new_env)
+</code>
+</div>
+</div>
+
+
+<a name="slide_65"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>": <i>...</i>
+elif fn[0] == "<i>native</i>":
+    py_fn = fn[1]
+    params = inspect.getargspec(py_fn).args
+    fail_if_wrong_number_of_args(expr[1], params[1:], args)
+    return <em>fn[1](env, *args)</em>
+</code>
+</div>
+</div>
+
+
+<a name="slide_66"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code><em>args</em> = list((<em>eval_expr</em>(a, env) for a in expr[2]))
+<i>...</i>
+if fn[0] == "<i>function</i>": <i>...</i>
+elif fn[0] == "<i>native</i>":
+else:
+    raise <em>Exception</em>( "Not a function: %s" % str(fn))
+</code>
+</div>
+</div>
+
+
+<a name="slide_67"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+elif typ == "<em>function</em>":
+    return ("function", expr[1], expr[2], <i>Env</i>(env))
+</code>
+</div>
+</div>
+
+
+<a name="slide_68"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Cell's evaluator</h1>
+<code>def eval_expr(expr, env):
+<i>...</i>
+else:
+    raise <em>Exception</em>("Unknown expression type: " + str(expr))
+</code>
+</div>
+</div>
+
+
+<a name="slide_69"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>End result: value + side effects</h1>
+<div class="image"><img src="print-value.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_70"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>A programming language</h1>
+<div class="image"><img src="programming-language-parts.svg"/></div>
+</div>
+</div>
+
+
+<a name="slide_71"></a>
+<div class="slide">
+<div class="slide_body">
+<h1>Discussion</h1>
+</div>
+</div>
