@@ -152,7 +152,26 @@ div.cc
     text-align: right;
 }
 
+div.cc2
+{
+    margin-top: 35%;
+    right: 5%;
+    font-size: 50%;
+    text-align: right;
+}
+
 div.cc img
+{
+    float: right;
+    max-width: 88px;
+    max-height: 31px;
+    border-width: 0px;
+    width: 15%;
+    margin-left: 0.75em;
+    margin-top: 0.25em;
+}
+
+div.cc2 img
 {
     float: right;
     max-width: 88px;
