@@ -5,6 +5,18 @@ html
     margin: 0em;
 }
 
+code.tiny {
+    font-size: 0.25em;
+}
+
+code.tinier {
+    font-size: 0.12em;
+}
+
+code.tiniest {
+    font-size: 0.1em;
+}
+
 body
 {
     background-color: white;
